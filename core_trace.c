@@ -13,6 +13,7 @@
 
 #include "helper.h"
 #include "tip_trace.h"
+#include "utils/string_list.h"
 
 #define NUM_TIPS (20)
 
@@ -44,20 +45,21 @@ int main (int argc, char ** argv) {
     FILE *filelist;
 
     //filenames
-    char ** filenames;
+    string_list_t *filenames;
+    char filename[64];
 
     // setup some variables until we can split this out into a proper function
     nx = 375;
     ny = 375;
-    total = 5000;
+    total = 6000;
     dt = 1;
 
-    filenames = malloc(total*sizeof(char*));
+    filenames = new_string_list();
 
     open(filelist, "r", "list.txt");
     for (index = 0; index < total; ++index) {
-        filenames[index] = malloc(32);
-        fscanf(filelist, "%s", filenames[index]);
+        fscanf(filelist, "%s", filename);
+        string_list_push(filenames, filename);
     }
 
 
@@ -74,7 +76,7 @@ int main (int argc, char ** argv) {
     }
 
     // loop over all the files
-    for (index = 0; index < total; ++index) {
+    for (index = 0; index < string_list_length(filenames); ++index) {
 
         // copy E into GH
         for (j = 0; j < ny; ++j) {
@@ -84,7 +86,7 @@ int main (int argc, char ** argv) {
         }
 
         // read in file.
-        read_binary_float_sheet(filenames[index], nx, ny, E);
+        read_binary_float_sheet(string_list_at(filenames, index), nx, ny, E);
 
         // calculate tip traces
         ntips = find_tips(nx, ny, E, level, GH, level, NUM_TIPS, tips);
@@ -95,7 +97,7 @@ int main (int argc, char ** argv) {
                 printf("%f %f %f\n", time, tips[i].x, tips[i].y);
             }
         } else {
-            fprintf(stderr, "Too many tips in file %s (%d)\n", filenames[index], ntips);
+            fprintf(stderr, "Too many tips in file %s (%d)\n", string_list_at(filenames, index), ntips);
         }
 
 
