@@ -16,12 +16,8 @@ int main (int argc, char ** argv) {
 
     // dimensions of the sheet.
     int nx, ny;
-    int total;
 
     float dt;
-
-    // the current file we're looking at.
-    int index;
 
 
     float level = -30;
@@ -35,14 +31,14 @@ int main (int argc, char ** argv) {
     // setup some variables until we can split this out into a proper function
     nx = 375;
     ny = 375;
-    total = 6000;
     dt = 1;
 
     filenames = new_string_list();
 
     open(filelist, "r", "list.txt");
-    for (index = 0; index < total; ++index) {
-        fscanf(filelist, "%s", filename);
+
+    // scan in all the filelist!
+    while(EOF != fscanf(filelist, "%s", filename)) {
         string_list_push(filenames, filename);
     }
 
