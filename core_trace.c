@@ -6,39 +6,23 @@
  *
  */
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
-#include <zlib.h>
 
-#include "helper.h"
-#include "tip_trace.h"
+#include "tip_trace_binary.h"
 #include "utils/string_list.h"
-
-#define NUM_TIPS (20)
-
-void read_binary_float_sheet(const char *filename, int nx, int ny, float ** E);
-
+#include "helper.h"
 
 int main (int argc, char ** argv) {
 
     // dimensions of the sheet.
     int nx, ny;
-    // total number of files to look at
     int total;
-    int i, j, ntips;
 
     float dt;
-    float time;
 
     // the current file we're looking at.
     int index;
 
-    // arrays to hold the sheets to be set
-    float ** E;
-    float ** GH;
-
-    point_t tips[NUM_TIPS];
 
     float level = -30;
 
@@ -62,69 +46,8 @@ int main (int argc, char ** argv) {
         string_list_push(filenames, filename);
     }
 
-
-    // allocate our arrays
-    F_ARRAY_2D(E, ny, nx);
-    F_ARRAY_2D(GH, ny, nx);
-
-
-    // zero the arrays involved
-    for (j = 0; j < ny; ++j) {
-        for (i = 0; i < nx; ++i) {
-            E[j][i] = 0.0;
-        }
-    }
-
-    // loop over all the files
-    for (index = 0; index < string_list_length(filenames); ++index) {
-
-        // copy E into GH
-        for (j = 0; j < ny; ++j) {
-            for (i = 0; i < nx; ++i) {
-                GH[j][i] = E[j][i];
-            }
-        }
-
-        // read in file.
-        read_binary_float_sheet(string_list_at(filenames, index), nx, ny, E);
-
-        // calculate tip traces
-        ntips = find_tips(nx, ny, E, level, GH, level, NUM_TIPS, tips);
-        time = index * dt;
-        if (ntips > -1) {
-            // if we have tips, output them!
-            for (i = 0; i < ntips; ++i) {
-                printf("%f %f %f\n", time, tips[i].x, tips[i].y);
-            }
-        } else {
-            fprintf(stderr, "Too many tips in file %s (%d)\n", string_list_at(filenames, index), ntips);
-        }
-
-
-    }
+    process_file_list(nx, ny, dt, level, filenames, BINARY_FLOAT, stdout);
 
     return 0;
 } /* end of main() */
 
-
-void read_binary_float_sheet(const char *filename, int nx, int ny, float ** E) {
-    gzFile sheet_file;
-    int rw;
-    
-    sheet_file = gzopen(filename, "r");
-    
-    if (!sheet_file) {
-        perror(filename);
-        exit(EXIT_FAILURE);
-    }
-
-    rw = gzread(sheet_file, E[0], sizeof(float)*nx*ny);
-    if (rw != nx*ny*sizeof(float)) {
-        fprintf(stderr, "Problem reading %s\n", filename);
-        fprintf(stderr, "%d/%d floats read\n", rw, nx*ny);
-        exit(EXIT_FAILURE);
-    }
-
-    gzclose(sheet_file);
-    
-}
