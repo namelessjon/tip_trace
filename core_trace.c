@@ -14,6 +14,9 @@
 #include "utils/string_list.h"
 #include "helper.h"
 
+static void print_help_text(char * progname);
+// help text output
+
 int main (int argc, char ** argv) {
     int c, file_set = 0;
  
@@ -119,7 +122,10 @@ int main (int argc, char ** argv) {
                 open(input, "r", optarg);
                 file_set = 1;
                 break;
+            case 'h':
+                print_help_text(argv[0]);
             case '?':
+                print_help_text(argv[0]);
                 /* getopt_long already printed an error message. */
                 break;
 
@@ -143,6 +149,7 @@ int main (int argc, char ** argv) {
 
     if (string_list_length(filenames) < 1) {
         fprintf(stderr, "No filenames found!\n");
+        print_help_text(argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -153,3 +160,24 @@ int main (int argc, char ** argv) {
     return 0;
 } /* end of main() */
 
+void print_help_text(char * progname) {
+    fprintf(stderr, "Usage: %s [OPTIONS] [FILE, FILE, ...]\n", progname);
+    fprintf(stderr, "Calculates the spiral tip trajectories in files...\n\n");
+    fprintf(stderr, "  -x NX, --x-dim NX\n");
+    fprintf(stderr, "                 The x dimension of the sheet (defaults to 375)\n");
+    fprintf(stderr, "  -y NY, --y-dim NY\n");
+    fprintf(stderr, "                 The y dimension of the sheet (defaults to 375)\n");
+    fprintf(stderr, "  -t DT, --timestep DT\n");
+    fprintf(stderr, "                 The timestep between successive frames of the sheet (defaults to 1)\n");
+    fprintf(stderr, "  -i LEVEL, --isoline LEVEL\n");
+    fprintf(stderr, "                 The isoline to track the tips alone (defaults to -30 mV)\n");
+    fprintf(stderr, "  -o FILE, --output FILE\n");
+    fprintf(stderr, "                 File to divert output to.  stdout otherwise.\n");
+    fprintf(stderr, "  -f FILE, --file FILE\n");
+    fprintf(stderr, "                 File to read framelist from.  - for stdin.  argv otherwise\n");
+    fprintf(stderr, "  -T TYPE, --tyoe TYPE\n");
+    fprintf(stderr, "                 Type of input files.  One of float (binary floats), double (binary doubles) or text (whitespace delimited text).  Defaults to float.\n");
+    fprintf(stderr, "  -h, --help\n");
+    fprintf(stderr, "                 This help\n");
+    exit(EXIT_FAILURE);
+}
