@@ -1,8 +1,6 @@
 /*
  * core_trace.c
  * Jonathan D. Stott <jonathan.stott@gmail.com>
- * Created: Tuesday, October 07, 2008 @ 10:04
- * Modified: Wednesday, December 17, 2008 @ 10:44
  *
  */
 
