@@ -2,7 +2,7 @@
  * core_trace.c
  * Jonathan D. Stott <jonathan.stott@gmail.com>
  * Created: Tuesday, October 07, 2008 @ 10:04
- * Modified: Monday, October 13, 2008 @ 12:00
+ * Modified: Wednesday, December 17, 2008 @ 10:44
  *
  */
 
@@ -175,7 +175,7 @@ void print_help_text(char * progname) {
     fprintf(stderr, "                 File to divert output to.  stdout otherwise.\n");
     fprintf(stderr, "  -f FILE, --file FILE\n");
     fprintf(stderr, "                 File to read framelist from.  - for stdin.  argv otherwise\n");
-    fprintf(stderr, "  -T TYPE, --tyoe TYPE\n");
+    fprintf(stderr, "  -T TYPE, --type TYPE\n");
     fprintf(stderr, "                 Type of input files.  One of float (binary floats), double (binary doubles) or text (whitespace delimited text).  Defaults to float.\n");
     fprintf(stderr, "  -h, --help\n");
     fprintf(stderr, "                 This help\n");
