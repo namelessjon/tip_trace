@@ -30,14 +30,12 @@
 // failed), the program exits, with a message informing you why.
 
 #define open(file,mode,...) {  \
-                                        char * str; \
-                                        MALLOC_C(str,64,"file alloc"); \
-                                        sprintf(str,__VA_ARGS__); \
-                                        file = fopen(str,mode); \
+                                        char _str[64]; \
+                                        sprintf(_str,__VA_ARGS__); \
+                                        file = fopen(_str,mode); \
                                         if (NULL == file) { \
-                                            oops(str); \
+                                            oops(_str); \
                                         } \
-                                        free(str); \
                                         }
 
 // Ooops macro
