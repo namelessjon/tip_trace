@@ -30,7 +30,7 @@ calculate_tip_coordinates.o: calculate_tip_coordinates.c point_t.h
 .PHONY: clean clobber
 
 clean:
-	@rm -f *.o
+	@rm -f *.o utils/*.o
 
 clobber: clean
 	@rm -f core_trace libtiptrace.a
