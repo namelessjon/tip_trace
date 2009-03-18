@@ -8,6 +8,8 @@
 
 #include "tip_trace_binary.h"
 
+#define BUFSIZE 1048576
+
 static int read_binary_float_sheet(int x, int y, float ** E, const char *filename);
 static int read_binary_double_sheet(int x, int y, float ** E, const char *filename);
 static int read_text_sheet(int x, int y, float ** E, const char *filename);
@@ -101,6 +103,80 @@ static int read_binary_double_sheet(int x, int y, float ** E, const char * filen
 }
 
 static int read_text_sheet(int x, int y, float ** E, const char * filename) {
-    fprintf(stderr, "Not implemented yet!\n");
-    exit(EXIT_FAILURE);
+    gzFile sheet_file;
+    char *buffer, *c, *pos, *prev_pos;
+    size_t i, j;
+
+    sheet_file = gzopen(filename, "r");
+
+    if (!sheet_file) {
+        perror(filename);
+        return -1;
+    }
+
+    // allocate a 1mb buffer
+    buffer = calloc(BUFSIZE, sizeof(char));
+    if (!buffer) {
+        gzclose(sheet_file);
+        return -1;
+    }
+
+    // zero our counters
+    i = j = 0;
+
+    while (j < y) {
+        // read in a line
+        c = gzgets(sheet_file, buffer, BUFSIZE);
+
+        // check we were successful.
+        if (Z_NULL == c) {
+            fprintf(stderr, "Error reading from '%s' on line %lu\n", filename, j);
+            free(buffer);
+            gzclose(sheet_file);
+            return -1;
+        }
+
+        pos = buffer;
+        prev_pos = 0;
+        i = 0;
+        while ((i < x) && (prev_pos != pos)) {
+            // assign the previous position to prev_pos
+            // this will be used to tell when we have the last float in the
+            // line.
+            prev_pos = pos;
+
+            // read the float from the buffer line
+            E[j][i] = (float) strtod(pos, &pos);
+
+            ++i;
+        }
+
+        // check we read in all we should.
+        if (i != x) {
+            fprintf(stderr, "Error reading from '%s' on line %lu.  %lu/%d floats read\n", filename, j, i, x);
+            free(buffer);
+            gzclose(sheet_file);
+            return -1;
+        }
+
+        ++j;
+
+        // if we've reached the end of the file, break.
+        if (gzeof(sheet_file))
+            break;
+    }
+
+    // check we read in all we should.
+    if (j != y) {
+        fprintf(stderr, "Error reading from '%s'. %lu/%d lines read\n", filename, j, y);
+        free(buffer);
+        gzclose(sheet_file);
+        return -1;
+    }
+
+    // cleanup, and return.
+    free(buffer);
+    gzclose(sheet_file);
+
+    return 0;
 }
