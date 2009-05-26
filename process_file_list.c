@@ -69,7 +69,7 @@ void process_file_list(int x, int y, float dt, float isoline, string_list_t *lis
         // read in file.
         if (0 == read_file(file_type, x, y, E, string_list_at(list, index))) {
             // calculate tip traces
-            ntips = find_tips(x, y, E, isoline, GH, isoline, NUM_TIPS, tips);
+            ntips = find_tips(x, y, E, isoline, GH, isoline, NUM_TIPS, tips, index);
             time = index * dt;
             if (ntips > -1) {
                 // if we have tips, output them!

@@ -15,7 +15,7 @@
 #include "point_t.h"
 
 int find_tips(int x, int y, float ** sheet_1, float isoline_1, float ** sheet_2,
-        float isoline_2, int ntips, point_t * tips);
+        float isoline_2, int ntips, point_t * tips, int num);
 // This method calculates if there are any spiral wave tips on the sheets, given
 // the desired isolines.  To find true tips, the two sheets should either
 // represent the same variables at different time steps, or two different
